@@ -4,7 +4,10 @@ import "components/Application.scss";
 
 import DayList from "./DayList";
 
+import React, { useState } from "react";
 
+//We stored the day state in the <Application> component.
+const [day, setDay] = useState("Monday");
 
 const days = [
   {
@@ -28,26 +31,23 @@ export default function Application(props) {
   return (
     <main className="layout">
       <section className="sidebar">
-      <img
-  className="sidebar--centered"
-  src="images/logo.png"
-  alt="Interview Scheduler"
-/>
-<hr className="sidebar__separator sidebar--centered" />
+        <img
+          className="sidebar--centered"
+          src="images/logo.png"
+          alt="Interview Scheduler"
+        />
+        <hr className="sidebar__separator sidebar--centered" />
 
-<nav className="sidebar__menu">
-<DayList
-  days={days}
-  day={"Monday"}
-  setDay={day => console.log(day)}
-/>
-</nav>
+        <nav className="sidebar__menu">
+          {/* //Passing day and days to <DayList> */}
+          <DayList days={days} day={day} setDay={setDay} />
+        </nav>
 
-<img
-  className="sidebar__lhl sidebar--centered"
-  src="images/lhl.png"
-  alt="Lighthouse Labs"
-/>
+        <img
+          className="sidebar__lhl sidebar--centered"
+          src="images/lhl.png"
+          alt="Lighthouse Labs"
+        />
       </section>
       <section className="schedule">
         {/* Replace this with the schedule elements durint the "The Scheduler" activity. */}
