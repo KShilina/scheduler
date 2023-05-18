@@ -17,6 +17,10 @@ import InterviewerList from "components/InterviewerList";
 
 import Appointment from "components/Appointment";
 
+import Header from "components/Appointment/Header";
+
+import Empty from "components/Appointment/Empty";
+
 storiesOf("Button", module)
   .addParameters({
     backgrounds: [{ name: "dark", value: "#222f3e", default: true }],
@@ -133,4 +137,8 @@ storiesOf("Appointment", module)
   })
   //The add() function accepts the name of the story as a string and a function that returns a React component.
   .add("Appointment", () => <Appointment />)
-  .add("Appointment with Time", () => <Appointment time="12pm" />);
+  .add("Appointment with Time", () => <Appointment time="12pm" />)
+  .add("Header", () => <Header time="12pm" />)
+  .add("Empty", () => <Empty onAdd={action("onAdd")} />)
+
+  
