@@ -31,6 +31,8 @@ import Error from "components/Appointment/Error";
 
 import Form from "components/Appointment/Form";
 
+import { Fragment } from 'react';
+
 storiesOf("Button", module)
   .addParameters({
     backgrounds: [{ name: "dark", value: "#222f3e", default: true }],
@@ -147,8 +149,8 @@ storiesOf("Appointment", module)
   })
   //The add() function accepts the name of the story as a string and a function that returns a React component.
   .add("Appointment", () => <Appointment />)
-  .add("Appointment with Time", () => <Appointment time="12pm" />)
-  .add("Header", () => <Header time="12pm" />)
+  .add("Appointment with Time", () => <Appointment time="4pm" />)
+  .add("Header", () => <Header time="4pm" />)
   .add("Empty", () => <Empty onAdd={action("onAdd")} />)
   .add("Show", () => (
     <Show
@@ -187,5 +189,21 @@ storiesOf("Appointment", module)
       onSave={action("onSave")}
       onCancel={action("onCancel")}
     />
+  ))
+  .add("Appointment Empty", () => (
+    <Fragment>
+      <Appointment id={1} time="4pm" />
+      <Appointment time="5pm" />
+    </Fragment>
+  ))
+  .add("Appointment Booked", () => (
+    <Fragment>
+      <Appointment
+        id={1}
+        time="4pm"
+        interview={{ student: "Lydia Miller-Jones", interviewer }}
+      />
+      <Appointment time="5pm" />
+    </Fragment>
   ));
  
