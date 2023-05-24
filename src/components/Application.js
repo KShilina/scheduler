@@ -1,74 +1,63 @@
 import React from "react";
-
+import axios from "axios";
+import { useState, useEffect } from "react";
 import "components/Application.scss";
-
 import DayList from "./DayList";
-
-import { useState } from "react";
-
 import "components/Appointment";
 import Appointment from "components/Appointment";
 
 const appointments = {
-  "1": {
+  1: {
     id: 1,
     time: "12pm",
   },
-  "2": {
+  2: {
     id: 2,
     time: "1pm",
     interview: {
       student: "Lydia Miller-Jones",
-      interviewer:{
+      interviewer: {
         id: 3,
         name: "Sylvia Palmer",
         avatar: "https://i.imgur.com/LpaY82x.png",
-      }
-    }
+      },
+    },
   },
-  "3": {
+  3: {
     id: 3,
     time: "2pm",
   },
-  "4": {
+  4: {
     id: 4,
     time: "3pm",
     interview: {
       student: "Archie Andrews",
-      interviewer:{
+      interviewer: {
         id: 4,
         name: "Cohana Roy",
         avatar: "https://i.imgur.com/FK8V841.jpg",
-      }
-    }
+      },
+    },
   },
-  "5": {
+  5: {
     id: 5,
     time: "4pm",
-  }
+  },
 };
-
-const days = [
-  {
-    id: 1,
-    name: "Monday",
-    spots: 2,
-  },
-  {
-    id: 2,
-    name: "Tuesday",
-    spots: 5,
-  },
-  {
-    id: 3,
-    name: "Wednesday",
-    spots: 0,
-  },
-];
 
 export default function Application(props) {
   // We stored the day state in the <Application> component.
-const [day, setDay] = useState("Monday");
+  const [day, setDay] = useState("Monday");
+  const [days, setDays] = useState([]);
+
+  useEffect(() => {
+    // console.log("useEffect running");
+    const url = `http://localhost:8001/api/days`;
+    axios.get(url).then((response) => {
+      // console.log(response.data);
+      setDays(response.data);
+    });
+  }, []);
 
   return (
     <main className="layout">
@@ -92,14 +81,9 @@ const [day, setDay] = useState("Monday");
         />
       </section>
       <section className="schedule">
-        {/* Replace this with the schedule elements durint the "The Scheduler" activity. */}
-        {Object.values(appointments).map( appointment => 
-        <Appointment 
-          key={appointment.id}
-          {...appointment}
-        />
-        )
-      }
+        {Object.values(appointments).map((appointment) => (
+          <Appointment key={appointment.id} {...appointment} />
+        ))}
       </section>
     </main>
   );
