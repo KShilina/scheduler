@@ -6,6 +6,7 @@ import DayList from "./DayList";
 import "components/Appointment";
 import Appointment from "components/Appointment";
 
+
 const appointments = {
   1: {
     id: 1,
@@ -45,18 +46,33 @@ const appointments = {
   },
 };
 
-export default function Application(props) {
-  // We stored the day state in the <Application> component.
-  const [day, setDay] = useState("Monday");
-  const [days, setDays] = useState([]);
 
+export default function Application(props) {
+  const [state, setState] = useState({
+    day: "Monday",
+    days: [],
+    appointments: {},
+  });
+
+  
+
+  const setDay = (day) => setState((prev) => ({ ...prev, day }));
+  const setDays = (days) => setState((prev) => ({ ...prev, days }));
+
+  // hook to fetch data from the server
+  //renders data for days (nav bar)
   useEffect(() => {
     // console.log("useEffect running");
-    const url = `http://localhost:8001/api/days`;
-    axios.get(url).then((response) => {
-      // console.log(response.data);
-      setDays(response.data);
-    });
+    const url = `/api/days`;
+    axios
+      .get(url)
+      .then((response) => {
+        // Make the GET request to API server
+        setDays(response.data); // Set the days state with the response data
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   return (
@@ -71,7 +87,7 @@ export default function Application(props) {
 
         <nav className="sidebar__menu">
           {/* Passing day and days to <DayList> */}
-          <DayList days={days} value={day} onChange={setDay} />
+          <DayList days={state.days} day={state.day} setDay={setDay} />
         </nav>
 
         <img
