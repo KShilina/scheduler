@@ -5,7 +5,7 @@ import "components/Application.scss";
 import DayList from "./DayList";
 import "components/Appointment";
 import Appointment from "components/Appointment";
-import { getAppointmentsForDay, getInterview } from "helpers/selectors";
+import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "helpers/selectors";
 
 export default function Application(props) {
   const [state, setState] = useState({
@@ -16,6 +16,7 @@ export default function Application(props) {
   });
 
   const setDay = (day) => setState((prev) => ({ ...prev, day }));
+
 
   // hook to fetch data from the server
   //renders data for days (nav bar)
@@ -43,6 +44,10 @@ export default function Application(props) {
       });
   }, []);
 
+
+  //to get the interviewers for the selected day
+  // const interviewers = getInterviewersForDay(state, state.day);
+
   return (
     <main className="layout">
       <section className="sidebar">
@@ -67,6 +72,7 @@ export default function Application(props) {
       <section className="schedule">
         {getAppointmentsForDay(state, state.day).map((appointment) => {
           const interview = getInterview(state, appointment.interview);
+          const interviewersForDay = getInterviewersForDay(state, state.day);
 
           return (
             <Appointment
@@ -74,6 +80,7 @@ export default function Application(props) {
               id={appointment.id}
               time={appointment.time}
               interview={interview}
+              interviewers={interviewersForDay}
             />
           );
         })}
