@@ -5,7 +5,11 @@ import "components/Application.scss";
 import DayList from "./DayList";
 import "components/Appointment";
 import Appointment from "components/Appointment";
-import { getAppointmentsForDay, getInterview, getInterviewersForDay } from "helpers/selectors";
+import {
+  getAppointmentsForDay,
+  getInterview,
+  getInterviewersForDay,
+} from "helpers/selectors";
 
 export default function Application(props) {
   const [state, setState] = useState({
@@ -17,7 +21,6 @@ export default function Application(props) {
 
   const setDay = (day) => setState((prev) => ({ ...prev, day }));
 
-
   // hook to fetch data from the server
   //renders data for days (nav bar)
   useEffect(() => {
@@ -27,10 +30,6 @@ export default function Application(props) {
       axios.get("/api/interviewers"),
     ])
       .then((all) => {
-        // console.log(all);
-        // console.log(all[0]);
-        // console.log(all[1]);
-        // console.log(all[2]);
         const [daysResponse, appointmentsResponse, interviewersResponse] = all;
         setState((prev) => ({
           ...prev,
@@ -44,10 +43,34 @@ export default function Application(props) {
       });
   }, []);
 
+  function bookInterview(id, interview) {
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview },
+    };
+
+    // Make a PUT request to update the appointment with the interview data
+    return axios
+      .put(`/api/appointments/${id}`, { interview })
+      .then(() => {
+        // Update the state with the new appointment
+        const appointments = {
+          ...state.appointments,
+          [id]: appointment,
+        };
+        setState((prev) => ({
+          ...prev,
+          appointments,
+        }));
+      })
+      .catch((error) => {
+        // Handle any errors that occur during the PUT request
+        console.error(error);
+      });
+  }
 
   //to get the interviewers for the selected day
   // const interviewers = getInterviewersForDay(state, state.day);
-
   return (
     <main className="layout">
       <section className="sidebar">
@@ -81,6 +104,7 @@ export default function Application(props) {
               time={appointment.time}
               interview={interview}
               interviewers={interviewersForDay}
+              bookInterview={bookInterview}
             />
           );
         })}
