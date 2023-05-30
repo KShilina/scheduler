@@ -97,6 +97,33 @@ export default function Application(props) {
       });
   }
 
+
+  function editInterview(id) {
+      const appointment = {
+        ...state.appointments[id],
+        interview:null,
+      };
+
+     //Make a PUT request to edit the interview data from the server
+     return axios
+      .put(`/api/appointments/${id}`) 
+      .then(() => {
+        const appointments = {
+          ...state.appointments,
+          [id]: appointment,
+        };
+        setState((prev) =>({
+          ...prev,
+          appointments,
+        }));
+      })
+      .catch((error) =>{
+        console.log(error);
+
+      });
+
+  }
+
   //to get the interviewers for the selected day
   // const interviewers = getInterviewersForDay(state, state.day);
   return (
@@ -134,6 +161,7 @@ export default function Application(props) {
               interviewers={interviewersForDay}
               bookInterview={bookInterview}
               cancelInterview={cancelInterview}
+              editInterview={editInterview}
             />
           );
         })}
