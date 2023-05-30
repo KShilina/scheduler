@@ -12,10 +12,12 @@ export default function Appointment(props) {
   const SHOW = "SHOW";
   const CREATE = "CREATE";
   const SAVING = "SAVING";
+  const DELETING = "DELETING";
   const { mode, transition, back } = useVisualMode(
     props.interview ? SHOW : EMPTY
   );
 
+  // Function to handle the saving of an appointment
   function save(name, interviewer) {
     const interview = {
       student: name,
@@ -24,6 +26,7 @@ export default function Appointment(props) {
 
     transition(SAVING); // Transition to SAVING mode
 
+    // Call the bookInterview function to make a PUT request and save the appointment with the interview data
     props
       .bookInterview(props.id, interview)
       .then(() => {
@@ -31,6 +34,21 @@ export default function Appointment(props) {
       })
       .catch((error) => {
         console.error(error); // Handle any errors that occur during the save operation
+      });
+  }
+
+  // Function to handle the deletion of an appointment
+  function deleting() {
+    transition(DELETING); // Transition to deleting mode
+
+    // Call the cancelInterview function to make a DELETE request and remove the interview data
+    props
+      .cancelInterview(props.id)
+      .then(() => {
+        transition(EMPTY); // Transition back to EMPTY mode when the DELETE request is complete
+      })
+      .catch((error) => {
+        console.log(error); // Handle any error that occurs during the delete operation
       });
   }
 
@@ -43,8 +61,10 @@ export default function Appointment(props) {
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}
+          onDelete={deleting}
         />
       )}
+
       {mode === CREATE && (
         <Form
           interviewers={props.interviewers}
@@ -52,7 +72,9 @@ export default function Appointment(props) {
           onCancel={() => back(EMPTY)}
         />
       )}
+
       {mode === SAVING && <Status message="Saving..." />}
+      {mode === DELETING && <Status message="Deleting..." />}
     </article>
   );
 }
