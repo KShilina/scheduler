@@ -69,6 +69,34 @@ export default function Application(props) {
       });
   }
 
+  function cancelInterview(id) {
+    // Update the appointment's interview data to null
+    const appointment = {
+      ...state.appointments[id],
+      interview: null,
+    };
+
+    //Make a DELETE request to remove the interview data from the server
+    return axios
+      .delete(`/api/appointments/${id}`)
+      .then(() => {
+        //Update the state with the modified appointment
+        const appointments = {
+          ...state.appointments,
+          [id]: appointment,
+        };
+        setState((prev) => ({
+          ...prev,
+          appointments,
+        }));
+
+      })
+      .catch((error) => {
+        //Handle any error that occur during the DELETE request
+        console.log(error);
+      });
+  }
+
   //to get the interviewers for the selected day
   // const interviewers = getInterviewersForDay(state, state.day);
   return (
@@ -105,6 +133,7 @@ export default function Application(props) {
               interview={interview}
               interviewers={interviewersForDay}
               bookInterview={bookInterview}
+              cancelInterview={cancelInterview}
             />
           );
         })}
