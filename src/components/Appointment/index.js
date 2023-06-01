@@ -7,6 +7,7 @@ import Form from "./Form";
 import Status from "./Status";
 import useVisualMode from "../../hooks/useVisualMode";
 import Confirm from "./Confirm";
+import Error from "./Error";
 
 export default function Appointment(props) {
   const EMPTY = "EMPTY";
@@ -16,6 +17,8 @@ export default function Appointment(props) {
   const DELETING = "DELETING";
   const CONFIRMING = "CONFIRMING";
   const EDIT = "EDIT";
+  const ERROR_SAVE = "ERROR_SAVE";
+  const ERROR_DELETE = "ERROR_DELETE";
   const { mode, transition, back } = useVisualMode(
     props.interview ? SHOW : EMPTY
   );
@@ -32,12 +35,8 @@ export default function Appointment(props) {
     // Call the bookInterview function to make a PUT request and save the appointment with the interview data
     props
       .bookInterview(props.id, interview)
-      .then(() => {
-        transition(SHOW); // Transition to SHOW mode when the PUT request is complete
-      })
-      .catch((error) => {
-        console.error(error); // Handle any errors that occur during the save operation
-      });
+      .then(() => transition(SHOW))
+      .catch((error) => transition(ERROR_SAVE, true)); // Replace the SAVING mode with ERROR_SAVE in the history
   }
 
   function confirmDeletion() {
@@ -46,27 +45,21 @@ export default function Appointment(props) {
 
   // Function to handle the deletion of an appointment
   function deleting() {
-    transition(DELETING); // Transition to deleting mode
-
-    // Call the cancelInterview function to make a DELETE request and remove the interview data
+    transition(DELETING, true); // Transition to DELETING mode and replace the current mode
     props
       .cancelInterview(props.id)
-      .then(() => {
-        transition(EMPTY); // Transition back to EMPTY mode when the DELETE request is complete
-      })
-      .catch((error) => {
-        console.log(error); // Handle any error that occurs during the delete operation
-      });
+      .then(() => transition(EMPTY))
+      .catch((error) => transition(ERROR_DELETE, true)); // Transition to ERROR_DELETE mode and replace the current mode
   }
 
-   // Function to edit an appointment
+  // Function to edit an appointment
   function confirmEdit() {
-    transition(EDIT);// Transition to EDIT mode
-// Call the editInterview function to make a PUT request and modify the interview data
+    transition(EDIT); // Transition to EDIT mode
+    // Call the editInterview function to make a PUT request and modify the interview data
     props
       .editInterview(props.id)
       .then(() => {
-        transition(CREATE);// Transition back to CREATE mode
+        transition(CREATE); // Transition back to CREATE mode
       })
       .catch((error) => {
         console.log(error);
@@ -112,6 +105,20 @@ export default function Appointment(props) {
           message="Are you sure you would like to delete?"
           onConfirm={deleting}
           onCancel={() => back(SHOW)}
+        />
+      )}
+
+      {mode === ERROR_DELETE && (
+        <Error
+          message="Error occurred while deleting the appointment"
+          onClose={() => back()}
+        />
+      )}
+
+      {mode === ERROR_SAVE && (
+        <Error
+          message="Error occurred while saving the appointment"
+          onClose={() => back()}
         />
       )}
     </article>
