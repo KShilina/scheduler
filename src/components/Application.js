@@ -50,23 +50,17 @@ export default function Application(props) {
     };
 
     // Make a PUT request to update the appointment with the interview data
-    return axios
-      .put(`/api/appointments/${id}`, { interview })
-      .then(() => {
-        // Update the state with the new appointment
-        const appointments = {
-          ...state.appointments,
-          [id]: appointment,
-        };
-        setState((prev) => ({
-          ...prev,
-          appointments,
-        }));
-      })
-      .catch((error) => {
-        // Handle any errors that occur during the PUT request
-        console.error(error);
-      });
+    return axios.put(`/api/appointments/${id}`, { interview }).then(() => {
+      // Update the state with the new appointment
+      const appointments = {
+        ...state.appointments,
+        [id]: appointment,
+      };
+      setState((prev) => ({
+        ...prev,
+        appointments,
+      }));
+    });
   }
 
   function cancelInterview(id) {
@@ -77,10 +71,29 @@ export default function Application(props) {
     };
 
     //Make a DELETE request to remove the interview data from the server
+    return axios.delete(`/api/appointments/${id}`).then(() => {
+      //Update the state with the modified appointment
+      const appointments = {
+        ...state.appointments,
+        [id]: appointment,
+      };
+      setState((prev) => ({
+        ...prev,
+        appointments,
+      }));
+    });
+  }
+
+  function editInterview(id) {
+    const appointment = {
+      ...state.appointments[id],
+      interview: null,
+    };
+
+    //Make a PUT request to edit the interview data on the server
     return axios
-      .delete(`/api/appointments/${id}`)
+      .put(`/api/appointments/${id}`)
       .then(() => {
-        //Update the state with the modified appointment
         const appointments = {
           ...state.appointments,
           [id]: appointment,
@@ -89,39 +102,10 @@ export default function Application(props) {
           ...prev,
           appointments,
         }));
-
       })
       .catch((error) => {
-        //Handle any error that occur during the DELETE request
         console.log(error);
       });
-  }
-
-
-  function editInterview(id) {
-      const appointment = {
-        ...state.appointments[id],
-        interview:null,
-      };
-
-     //Make a PUT request to edit the interview data from the server
-     return axios
-      .put(`/api/appointments/${id}`) 
-      .then(() => {
-        const appointments = {
-          ...state.appointments,
-          [id]: appointment,
-        };
-        setState((prev) =>({
-          ...prev,
-          appointments,
-        }));
-      })
-      .catch((error) =>{
-        console.log(error);
-
-      });
-
   }
 
   //to get the interviewers for the selected day
