@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import {getAppointmentsForDay} from "../helpers/selectors";
 
 
 export default function useApplicationData (){
@@ -10,7 +11,8 @@ export default function useApplicationData (){
     appointments: {},
     interviewers: {},
   });
-  console.log("state",state);
+  console.log("Here is the State;",state.day);
+ 
 
   const setDay = (day) => setState((prev) => ({ ...prev, day }));
 
@@ -32,7 +34,7 @@ export default function useApplicationData (){
         }));
       })
       .catch((error) => {
-        // console.log(error);
+        console.log(error);
       });
   }, []);
 
@@ -53,6 +55,7 @@ export default function useApplicationData (){
         ...prev,
         appointments,
       }));
+      updateSpots(appointments);// Update the spots when booking an interview
     });
   }
 
@@ -74,6 +77,7 @@ export default function useApplicationData (){
         ...prev,
         appointments,
       }));
+       updateSpots(appointments);// Update the spots when deleting an interview
     });
   }
 
@@ -99,6 +103,36 @@ export default function useApplicationData (){
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  function updateSpots(appointments) {
+    console.log("Updating spots...", appointments);
+    // Retrieve the 'days' array from the state
+    const days = state.days.map((day) => {
+      // Calculate the number of spots for each day
+      const spots = getAppointmentsForDay({ days: state.days, appointments }, day.name).reduce(
+        
+        (count, appointment) => {
+          // Check if the appointment has a null interview
+          console.log("Appoint[id]:", appointments[appointment.id]);
+          console.log("apps", appointments);
+          console.log("ID",appointment.id);
+          if (appointments[appointment.id].interview === null) {
+            return count + 1; // Increment the count if the appointment has no interview
+          }
+          return count; // Keep the count as is if the appointment has an interview
+        },0);// Initial count value is 0
+  
+      // Return a new object with the updated 'spots' value for the day
+      // console.log("Spots:",spots);
+      return { ...day, spots };
+    });
+  
+    // Update the state with the updated 'days' array
+    setState((prev) => ({
+      ...prev,
+      days,
+    }));
   }
 
    //to get the interviewers for the selected day
