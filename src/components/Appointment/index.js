@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./styles.scss";
 import Header from "./Header";
 import Show from "./Show";
@@ -19,9 +19,27 @@ export default function Appointment(props) {
   const EDIT = "EDIT";
   const ERROR_SAVE = "ERROR_SAVE";
   const ERROR_DELETE = "ERROR_DELETE";
+
   const { mode, transition, back } = useVisualMode(
     props.interview ? SHOW : EMPTY
   );
+
+  useEffect(() => {
+    // Check if we are in the EMPTY mode with a truthy interview value
+    if (props.interview?.student) {
+      // If interview.student exists (truthy), transition to SHOW mode
+      transition(SHOW);
+    } else {
+      // If interview.student does not exist (falsy), transition to EMPTY mode
+      transition(EMPTY);
+    }
+    // Safe navigation using the optional chaining operator "?"
+  }, [props.interview?.student]);
+
+
+  //stable objects
+  //primitives 10
+  //non-primitievs/objects
 
   // Function to handle the saving of an appointment
   function save(name, interviewer) {
@@ -36,7 +54,10 @@ export default function Appointment(props) {
     props
       .bookInterview(props.id, interview)
       .then(() => transition(SHOW))
-      .catch((error) => transition(ERROR_SAVE, true)); // Replace the SAVING mode with ERROR_SAVE in the history
+      .catch((error) => {
+        console.log("Error msg", error);
+        transition(ERROR_SAVE, true);
+      }); // Replace the SAVING mode with ERROR_SAVE in the history
   }
 
   function confirmDeletion() {
@@ -50,28 +71,22 @@ export default function Appointment(props) {
       .cancelInterview(props.id)
       .then(() => transition(EMPTY))
       .catch((error) => transition(ERROR_DELETE, true)); // Transition to ERROR_DELETE mode and replace the current mode
+    console.log("Delete Error", ERROR_DELETE);
   }
 
   // Function to edit an appointment
   function confirmEdit() {
     transition(EDIT); // Transition to EDIT mode
-    // Call the editInterview function to make a PUT request and modify the interview data
-    props
-      .editInterview(props.id)
-      .then(() => {
-        transition(CREATE); // Transition back to CREATE mode
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   }
+
+  console.log("Mode", mode, props.id, props.interview);
 
   return (
     <article className="appointment">
       <Header time={props.time} />
       {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
 
-      {mode === SHOW && (
+      {mode === SHOW && props.interview?.student && (
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}
