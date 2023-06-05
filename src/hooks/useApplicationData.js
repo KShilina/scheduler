@@ -10,17 +10,27 @@ const SET_SPOTS = "SET_SPOTS";
 function reducer(state, action) {
   switch (action.type) {
     case SET_DAY:
-      return { ...state, day: action.day };
+      return { ...state, day: action.day }; // Update the selected day in the state
     case SET_APPLICATION_DATA:
       return {
         ...state,
         days: action.days,
         appointments: action.appointments,
         interviewers: action.interviewers,
-      };
-    case SET_INTERVIEW:
-      return { ...state, appointments: action.appointments };
+      }; // Update the application data in the state
 
+    case SET_INTERVIEW:
+      // return { ...state, appointments: action.appointments };
+      return {
+        ...state,
+        appointments: {
+          ...state.appointments,
+          [action.id]: {
+            ...state.appointments[action.id],
+            interview: action.interview,
+          },
+        },
+      }; // Update the interview data for a specific appointment in the state
     case SET_SPOTS:
       return { ...state, days: action.days, appointments: action.appointments };
     default:
@@ -36,13 +46,41 @@ export default function useApplicationData() {
     days: [],
     appointments: {},
     interviewers: {},
-  });
-  console.log("state:", state);
+  }); // Initialize the state using useReducer hook
 
-  const setDay = (day) => dispatch({ type: SET_DAY, day });
+  const setDay = (day) => dispatch({ type: SET_DAY, day }); // Dispatch action to update the selected day in the state
 
-  // hook to fetch data from the server
-  //renders data for days (nav bar)
+  // Establish a WebSocket connection when the component mounts
+  useEffect(() => {
+    const socket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+
+    // Listen for "SET_INTERVIEW" messages from the WebSocket server
+    socket.addEventListener("message", (event) => {
+      console.log("event.data:", event.data);
+      const data = JSON.parse(event.data);
+      if (data.type === "SET_INTERVIEW") {
+        // Dispatch "SET_INTERVIEW" action to update interview data
+        dispatch({
+          type: "SET_INTERVIEW",
+          id: data.id,
+          interview: data.interview,
+        });
+      }
+    });
+
+    // Send a "ping" message to the server once the WebSocket connection is open
+    socket.addEventListener("open", () => {
+      const message = "ping";
+      socket.send(message);
+    });
+
+    // Clean up the WebSocket connection when the component unmounts
+    return () => {
+      socket.close();
+    };
+  }, [dispatch]);
+
+  // Fetch initial data from the server
   useEffect(() => {
     Promise.all([
       axios.get("/api/days"),
@@ -51,6 +89,7 @@ export default function useApplicationData() {
     ])
       .then((all) => {
         const [daysResponse, appointmentsResponse, interviewersResponse] = all;
+        // Dispatch "SET_APPLICATION_DATA" action to update the application state
         dispatch({
           type: SET_APPLICATION_DATA,
           days: daysResponse.data,
@@ -63,94 +102,69 @@ export default function useApplicationData() {
       });
   }, []);
 
+  // useCallback
+  useEffect(() => {
+    updateSpots(state.appointments);
+  }, [state.appointments]);
+
   function bookInterview(id, interview) {
     const appointment = {
       ...state.appointments[id],
-      interview: { ...interview },
+      interview,
     };
 
     // Make a PUT request to update the appointment with the interview data
     return axios.put(`/api/appointments/${id}`, { interview }).then(() => {
-      // Update the state with the new appointment
       const appointments = {
         ...state.appointments,
         [id]: appointment,
       };
+      // Dispatch "SET_INTERVIEW" action to update interview data
       dispatch({
         type: SET_INTERVIEW,
-        appointments,
+        id,
+        interview,
       });
-      updateSpots(appointments); // Update the spots when booking an interview
+      // Update spots when booking an interview
+      updateSpots(appointments);
     });
   }
 
   function cancelInterview(id) {
-    // Update the appointment's interview data to null
     const appointment = {
       ...state.appointments[id],
       interview: null,
     };
 
-    //Make a DELETE request to remove the interview data from the server
+    // Make a DELETE request to remove the interview data from the server
     return axios.delete(`/api/appointments/${id}`).then(() => {
-      //Update the state with the modified appointment
       const appointments = {
         ...state.appointments,
         [id]: appointment,
       };
+      // Dispatch "SET_INTERVIEW" action to update interview data
       dispatch({
         type: SET_INTERVIEW,
-        appointments,
+        id,
+        interview: null,
       });
-      updateSpots(appointments); // Update the spots when deleting an interview
+      // Update spots when canceling an interview
+      updateSpots(appointments);
     });
   }
 
-  function editInterview(id) {
-    const appointment = {
-      ...state.appointments[id],
-      interview: null,
-    };
-
-    //Make a PUT request to edit the interview data on the server
-    return axios
-      .put(`/api/appointments/${id}`)
-      .then(() => {
-        const appointments = {
-          ...state.appointments,
-          [id]: appointment,
-        };
-        dispatch({
-          type: SET_INTERVIEW,
-          appointments,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
   function updateSpots(appointments) {
-    console.log("Updating spots...", appointments);
-    // Retrieve the 'days' array from the state
+    // Calculate and update the number of spots for each day
     const days = state.days.map((day) => {
-      // Calculate the number of spots for each day
       const spots = getAppointmentsForDay(
         { days: state.days, appointments },
         day.name
       ).reduce((count, appointment) => {
-        // Check if the appointment has a null interview
-        console.log("Appoint[id]:", appointments[appointment.id]);
-        console.log("apps", appointments);
-        console.log("ID", appointment.id);
         if (appointments[appointment.id].interview === null) {
-          return count + 1; // Increment the count if the appointment has no interview
+          return count + 1;
         }
-        return count; // Keep the count as is if the appointment has an interview
-      }, 0); // Initial count value is 0
-
-      // Return a new object with the updated 'spots' value for the day
-      // console.log("Spots:",spots);
+        return count;
+      }, 0);
       return { ...day, spots };
     });
 
@@ -158,14 +172,10 @@ export default function useApplicationData() {
     dispatch({ type: SET_SPOTS, days, appointments });
   }
 
-  //to get the interviewers for the selected day
-  // const interviewers = getInterviewersForDay(state, state.day);
-
   return {
     state,
     setDay,
     bookInterview,
     cancelInterview,
-    editInterview,
   };
 }
