@@ -105,6 +105,7 @@ export default function useApplicationData() {
   // useCallback
   useEffect(() => {
     updateSpots(state.appointments);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.appointments]);
 
   function bookInterview(id, interview) {
