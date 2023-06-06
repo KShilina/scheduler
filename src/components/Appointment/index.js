@@ -34,6 +34,7 @@ export default function Appointment(props) {
       transition(EMPTY);
     }
     // Safe navigation using the optional chaining operator "?"
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.interview?.student]);
 
 
