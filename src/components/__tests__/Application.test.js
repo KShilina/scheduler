@@ -1,17 +1,53 @@
 import React from "react";
 
-import { render, cleanup } from "@testing-library/react";
+import {
+  render,
+  cleanup,
+  getByText,
+  getByAltText,
+  getByPlaceholderText,
+} from "@testing-library/react";
 
 import Application from "components/Application";
-import {waitForElement, fireEvent} from "@testing-library/react";
+import {
+  waitForElement,
+  fireEvent,
+  prettyDOM,
+  getAllByTestId,
+} from "@testing-library/react";
+// import { expect } from "chai";
 
 afterEach(cleanup);
 
-it("defaults to Monday and changes the schedule when a new day is selected", () => {
-  const { getByText } = render(<Application />);
-//The argument we pass to waitForElement is a function that returns a promise a DOM node.It is looking for something based on the text "Monday".
-  return waitForElement(() => getByText("Monday")).then(() => {
+describe("Form", () => {
+  it("changes the schedule when a new day is selected", async () => {
+    const { getByText } = render(<Application />);
+
+    await waitForElement(() => getByText("Monday"));
+
     fireEvent.click(getByText("Tuesday"));
+
     expect(getByText("Leopold Silvers")).toBeInTheDocument();
+  });
+
+  it("loads data, books an interview and reduces the spots remaining for Monday by 1", async () => {
+    const { container } = render(<Application />);
+
+    await waitForElement(() => getByText(container, "Archie Cohen"));
+
+    console.log("CONTAINER 1:", prettyDOM(container));
+
+    const appointments = getAllByTestId(container, "appointment");
+    const appointment = appointments[0];
+
+    fireEvent.click(getByAltText(appointment, "Add"));
+
+    fireEvent.change(getByPlaceholderText(appointment, /enter student name/i), {
+      target: { value: "Lydia Miller-Jones" },
+    });
+
+    fireEvent.click(getByAltText(appointment, "Sylvia Palmer"));
+
+    fireEvent.click(getByText(appointment, "Save"));
   });
 });
