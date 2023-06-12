@@ -80,10 +80,12 @@ export default function Appointment(props) {
     transition(EDIT); // Transition to EDIT mode
   }
 
-  console.log("Mode", mode, props.id, props.interview);
+  // console.log("Mode", mode, props.id, props.interview);
 
   return (
-    <article className="appointment">
+    <article 
+    className="appointment" 
+    data-testid="appointment">
       <Header time={props.time} />
       {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
 
