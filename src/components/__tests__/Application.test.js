@@ -18,7 +18,7 @@ import {
   prettyDOM,
   debug,
 } from "@testing-library/react";
-// import { expect } from "chai";
+
 
 afterEach(cleanup);
 
@@ -188,7 +188,7 @@ describe("Form", () => {
     );
     // 5. Click the "Delete" button.
     fireEvent.click(queryByAltText(appointment, "Delete"));
-
+    
     expect(
       getByText(appointment, "Are you sure you would like to delete?")
     ).toBeInTheDocument();
