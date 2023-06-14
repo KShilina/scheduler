@@ -37,11 +37,6 @@ export default function Appointment(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.interview?.student]);
 
-
-  //stable objects
-  //primitives 10
-  //non-primitievs/objects
-
   // Function to handle the saving of an appointment
   function save(name, interviewer) {
     const interview = {
@@ -72,7 +67,6 @@ export default function Appointment(props) {
       .cancelInterview(props.id)
       .then(() => transition(EMPTY))
       .catch((error) => transition(ERROR_DELETE, true)); // Transition to ERROR_DELETE mode and replace the current mode
-    console.log("Delete Error", ERROR_DELETE);
   }
 
   // Function to edit an appointment
@@ -80,12 +74,8 @@ export default function Appointment(props) {
     transition(EDIT); // Transition to EDIT mode
   }
 
-  // console.log("Mode", mode, props.id, props.interview);
-
   return (
-    <article 
-    className="appointment" 
-    data-testid="appointment">
+    <article className="appointment" data-testid="appointment">
       <Header time={props.time} />
       {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
 
@@ -112,7 +102,7 @@ export default function Appointment(props) {
           onSave={save}
           onCancel={() => back(SHOW)}
           name={props.interview.student}
-          interviewer={props.interview.interviewer}
+          interviewer={props.interview.interviewer.id}
         />
       )}
 
