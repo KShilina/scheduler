@@ -20,7 +20,6 @@ function reducer(state, action) {
       }; // Update the application data in the state
 
     case SET_INTERVIEW:
-      // return { ...state, appointments: action.appointments };
       return {
         ...state,
         appointments: {
@@ -56,7 +55,6 @@ export default function useApplicationData() {
 
     // Listen for "SET_INTERVIEW" messages from the WebSocket server
     socket.addEventListener("message", (event) => {
-      console.log("event.data:", event.data);
       const data = JSON.parse(event.data);
       if (data.type === "SET_INTERVIEW") {
         // Dispatch "SET_INTERVIEW" action to update interview data

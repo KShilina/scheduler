@@ -1,9 +1,11 @@
 import { useState } from "react";
 
+//The useVisualMode custom hook is defined
 export default function useVisualMode(initial) {
   const [mode, setMode] = useState(initial);
   const [history, setHistory] = useState([initial]);
 
+  //The transition function allows transitioning to a new mode
   function transition(newMode, replace = false) {
     if (replace) {
       setHistory((prevHistory) => {
@@ -16,8 +18,7 @@ export default function useVisualMode(initial) {
     }
     setMode(newMode);
   }
-  
-
+  //The back function is defined, which allows going back to the previous mode in history
   function back() {
     if (history.length > 1) {
       // Remove the last mode from history
