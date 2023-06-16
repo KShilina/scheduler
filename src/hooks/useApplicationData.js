@@ -51,7 +51,7 @@ export default function useApplicationData() {
 
   // Establish a WebSocket connection when the component mounts
   useEffect(() => {
-    const socket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+    const socket = new WebSocket('wss://scheduler-api-production-b94e.up.railway.app/');
 
     // Listen for "SET_INTERVIEW" messages from the WebSocket server
     socket.addEventListener("message", (event) => {
