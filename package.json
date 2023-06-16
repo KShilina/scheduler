@@ -52,5 +52,5 @@
       "<rootDir>/.git/"
     ]
   },
-  "proxy": "https://scheduler-api-production-b94e.up.railway.app/"
+  "proxy": "http://localhost:8001"
 }
