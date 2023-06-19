@@ -1,4 +1,6 @@
 # About Interview Scheduler
+Go Live: [https://interview-scheduler-ekaterina.netlify.app/](https://interview-scheduler-ekaterina.netlify.app/)
+
   Interview Scheduler is a single-page application (SPA) that allows users to book technical interviews between students and mentors. Appointments can be scheduled between 12 PM and 5 PM, Monday to Friday. Each appointment consists of one student and one interviewer. When creating a new appointment, the user can enter the name of any student, while the interviewer is selected from a predefined list. The user can save the appointment and view the entire schedule of appointments for any day of the week. Additionally, appointments can be edited or deleted.
   WebSocket API has been implemented to establish a persistent connection between the scheduler API server and clients. Whenever an appointment is created or deleted, a message containing the updated data is sent to all connected clients.
   The front end of this project is built with React, and it makes requests to an API to fetch and store appointment data from a database.
