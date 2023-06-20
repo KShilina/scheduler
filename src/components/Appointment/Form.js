@@ -18,6 +18,7 @@ export default function Form(props) {
   const handleInterviewerChange = (interviewerId) => {
     setInterviewer(interviewerId);
   };
+  
 
   const reset = () => {
     setStudent("");
@@ -61,7 +62,7 @@ export default function Form(props) {
         <section className="appointment__validation">{error}</section>
         <InterviewerList
           interviewers={interviewers}
-          value={setInterviewer}
+          value={interviewer}
           onChange={handleInterviewerChange}
         />
       </section>
