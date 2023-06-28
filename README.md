@@ -1,5 +1,9 @@
 # About Interview Scheduler
-Go Live: [https://interview-scheduler-ekaterina.netlify.app/](https://interview-scheduler-ekaterina.netlify.app/)
+The project deployed at the address [https://interview-scheduler-ekaterina.netlify.app/](https://interview-scheduler-ekaterina.netlify.app/) by using the following technologies:
+
+1. [Railway](https://railway.app/project/07948158-0832-43c8-be13-af8005deee21/service/e37cb214-f826-44e9-90ed-d79c842bab8f) - a service that simplifies the deployment process for web applications and takes care of the server configuration process.
+2. [CircleCI](https://app.circleci.com/pipelines/github/KShilina/scheduler) - manage our continuous integration process. We have connected CircleCI to GitHub so that it can listen for changes to the master branch. We update the keys to ensure that CircleCI can also trigger an automatic deploy to the production branch.
+3. [Netlify](https://app.netlify.com/sites/interview-scheduler-ekaterina/settings/domain) - configured Netlify to watch the origin production branch and deploy the site automatically.
 
   Interview Scheduler is a single-page application (SPA) that allows users to book technical interviews between students and mentors. Appointments can be scheduled between 12 PM and 5 PM, Monday to Friday. Each appointment consists of one student and one interviewer. When creating a new appointment, the user can enter the name of any student, while the interviewer is selected from a predefined list. The user can save the appointment and view the entire schedule of appointments for any day of the week. Additionally, appointments can be edited or deleted.
   WebSocket API has been implemented to establish a persistent connection between the scheduler API server and clients. Whenever an appointment is created or deleted, a message containing the updated data is sent to all connected clients.
@@ -76,21 +80,21 @@ npm start
 5. Run the backend server by using the instructions here: [https://github.com/lighthouse-labs/scheduler-api](https://github.com/lighthouse-labs/scheduler-api)
 
 ## Dependencies :
-`"axios":` "^0.20.0",
+`"axios":` "^0.20.0" (promise-based HTTP client for making API requests)
 
 `"classnames":` "^2.2.6",
 
 ` "normalize.css": ` "^8.0.1",
 
-` "react":` "^16.9.0",
+` "react":` "^16.9.0" (JavaScript library for building user interfaces.)
 
-`"react-dom":` "^16.9.0",
+`"react-dom":` "^16.9.0" (package that provides DOM-specific methods for React)
 
-`"react-scripts":` "3.4.4"
+`"react-scripts":` "3.4.4" (set of scripts and configuration used by Create React App (CRA) for development and building React applications)
 ### devDependencies :
- `"@babel/core":`  "^7.4.3",
+ `"@babel/core":`  "^7.4.3" (JavaScript compiler for using modern syntax)
 
-`"@storybook/addon-actions":` "^5.0.10",
+`"@storybook/addon-actions":` "^5.0.10" (UI component development environment.)
 
 `"@storybook/addon-backgrounds": `"^5.0.10",
 
@@ -112,7 +116,7 @@ npm start
 
 `"react-test-renderer": `"^16.9.0",
 
-`"sass": `"^1.53.0"
+`"sass": `"^1.53.0" (CSS preprocessor with advanced features)
 
 
 ## Running Jest Test Framework
